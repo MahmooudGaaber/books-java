@@ -20,7 +20,7 @@ public class BookController {
 
     private void initializeBooks(){
         books.addAll(List.of(
-                new Book("title one ","author two","science"),
+                new Book("title one","author two","science"),
                 new Book("title two","author two","science"),
                 new Book("title three","author three","history"),
                 new Book("title four","author four","math"),
@@ -42,6 +42,14 @@ public class BookController {
            }
        }
         return null;
+    }
+
+    @GetMapping("/api/books/{title}/ByStreamsAndLambda")
+    public Book getBookByTitleWithStreamAndLambda(@PathVariable String title ){
+        return books.stream()
+                .filter(book -> book.getTitle().equalsIgnoreCase(title))
+                .findFirst()
+                .orElse(null);
     }
 
 
