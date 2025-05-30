@@ -3,6 +3,7 @@ package com.luv2code.books.controller;
 import com.luv2code.books.entity.Book;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -53,6 +54,16 @@ public class BookController {
     }
 
 
+
+    @GetMapping("/api/books/withQueryParameter")
+    public List<Book> getBookByCategoryWithQueryParameter(@RequestParam(required = false) String category ){
+        if (category == null ){
+            return  books;
+        }
+        return books.stream()
+                .filter(book -> book.getCategory().equalsIgnoreCase(category))
+                .toList();
+    }
 
 
 
