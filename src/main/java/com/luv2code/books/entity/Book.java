@@ -2,16 +2,39 @@ package com.luv2code.books.entity;
 
 
 public class Book {
+
+    private long id;
+
     private String title;
 
     private String author;
 
     private String category;
 
-    public Book(String title, String author, String category) {
-        this.title = title;
-        this.author = author;
+    private int rating;
+
+    public Book(long id, int rating, String category, String author, String title) {
+        this.id = id;
+        this.rating = rating;
         this.category = category;
+        this.author = author;
+        this.title = title;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public String getTitle() {

@@ -19,13 +19,15 @@ public class BookController {
 
     private void initializeBooks(){
         books.addAll(List.of(
-                new Book("title one","author two","science"),
-                new Book("title two","author two","science"),
-                new Book("title three","author three","history"),
-                new Book("title four","author four","math"),
-                new Book("title five","author five","math"),
-                new Book("title six","author six","math")
-        ));
+
+                new Book(1,5,"Computer Science","Chad Derby","Computer Science Pro"),
+                new Book(2,5,"Computer Science","Eric Roby","Java Spring Master"),
+                new Book(3,5,"Math","Adil A.","Why 1+1 Rocks"),
+                new Book(4,2,"Science","Bob B.","How Bears Hibernate"),
+                new Book(5,3,"History","Curt C.","A Pirate Treasure"),
+                new Book(6,1,"Math","Dan D.","Why 2+2 is Better")
+
+                ));
     }
 
     @GetMapping("books")
