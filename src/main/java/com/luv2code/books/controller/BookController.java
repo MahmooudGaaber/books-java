@@ -1,6 +1,7 @@
 package com.luv2code.books.controller;
 
 import com.luv2code.books.entity.Book;
+import com.luv2code.books.entity.RequestBook;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -76,12 +77,10 @@ public class BookController {
     }
 
     @PostMapping("books")
-    public void createBook(@RequestBody Book newBook ){
-      boolean inNewBook = books.stream()
-              .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
-      if (inNewBook){
-          books.add(newBook);
-      }
+    public void createBook(@RequestBody RequestBook requestBook ){
+        long id = books.isEmpty() ? 1 :( books.getLast().getId() +1 );
+        Book newBook = new Book(id,requestBook.getRating(), requestBook.getCategory(), requestBook.getAuthor(), requestBook.getTitle());
+        books.add(newBook);
     }
 
 
