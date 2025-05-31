@@ -79,8 +79,11 @@ public class BookController {
     @PostMapping("books")
     public void createBook(@RequestBody RequestBook requestBook ){
         long id = books.isEmpty() ? 1 :( books.getLast().getId() +1 );
-        Book newBook = new Book(id,requestBook.getRating(), requestBook.getCategory(), requestBook.getAuthor(), requestBook.getTitle());
-        books.add(newBook);
+        books.add(convertRequestToBook(id,requestBook));
+    }
+
+    public Book convertRequestToBook(long id , RequestBook book){
+        return  new Book(id,book.getRating(), book.getCategory(), book.getAuthor(), book.getTitle());
     }
 
 
