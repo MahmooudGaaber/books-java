@@ -2,14 +2,17 @@ package com.luv2code.books.controller;
 
 import com.luv2code.books.entity.Book;
 import com.luv2code.books.entity.RequestBook;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Tag(name = "Books Rest API Endpoints ",description = "Operation Related to books")
 @RestController
 @RequestMapping("/api/")
 public class BookController {
@@ -33,11 +36,16 @@ public class BookController {
                 ));
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get All Books")
     @GetMapping("books")
     public List<Book> getBooks() {
         return books;
     }
 
+
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get Books By Id")
     @GetMapping("books/{id}")
     public Book getBookById(@PathVariable @Min(value = 1) long   id ){
         return books.stream()
@@ -48,16 +56,18 @@ public class BookController {
 
 
 
-    @GetMapping("books/withQueryParameter")
-    public List<Book> getBookByCategoryWithQueryParameter(@RequestParam(required = false) String category ){
-        if (category == null ){
-            return  books;
-        }
-        return books.stream()
-                .filter(book -> book.getCategory().equalsIgnoreCase(category))
-                .toList();
-    }
+//    @GetMapping("books/withQueryParameter")
+//    public List<Book> getBookByCategoryWithQueryParameter(@RequestParam(required = false) String category ){
+//        if (category == null ){
+//            return  books;
+//        }
+//        return books.stream()
+//                .filter(book -> book.getCategory().equalsIgnoreCase(category))
+//                .toList();
+//    }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create New Book")
     @PostMapping("books")
     public void createBook( @Valid @RequestBody RequestBook requestBook ){
         long id = books.isEmpty() ? 1 :( books.getLast().getId() +1 );
@@ -68,7 +78,8 @@ public class BookController {
         return  new Book(id,book.getRating(), book.getCategory(), book.getAuthor(), book.getTitle());
     }
 
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Update Book")
     @PutMapping("books/{id}")
     public void updateBook(
             @PathVariable  @Min(value = 1) long id,
@@ -85,6 +96,8 @@ public class BookController {
 
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Update Book By Id")
     @DeleteMapping("/api/books/{id}")
     public void deleteBook(@PathVariable  @Min(value = 1) long id){
         books.removeIf(book -> book.getId() == id);
