@@ -2,6 +2,8 @@ package com.luv2code.books.controller;
 
 import com.luv2code.books.entity.Book;
 import com.luv2code.books.entity.RequestBook;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -36,28 +38,8 @@ public class BookController {
         return books;
     }
 
-    @GetMapping("books/{title}")
-    public Book getBookByTitle(@PathVariable String title ){
-       for (Book book : books){
-           if (book.getTitle().equalsIgnoreCase(title)){
-               return book;
-           }
-       }
-        return null;
-    }
-
-//    @GetMapping("books/{id}")
-//    public Book getBookByIf(@PathVariable long   id ){
-//        for (Book book : books){
-//            if (book.getId()== id){
-//                return book;
-//            }
-//        }
-//        return null;
-//    }
-
     @GetMapping("books/{id}")
-    public Book getBookById(@PathVariable long   id ){
+    public Book getBookById(@PathVariable @Min(value = 1) long   id ){
         return books.stream()
                 .filter(book -> book.getId()== id)
                 .findFirst()
@@ -77,7 +59,7 @@ public class BookController {
     }
 
     @PostMapping("books")
-    public void createBook(@RequestBody RequestBook requestBook ){
+    public void createBook( @Valid @RequestBody RequestBook requestBook ){
         long id = books.isEmpty() ? 1 :( books.getLast().getId() +1 );
         books.add(convertRequestToBook(id,requestBook));
     }
@@ -89,12 +71,13 @@ public class BookController {
 
     @PutMapping("books/{id}")
     public void updateBook(
-            @PathVariable long id,
-            @RequestBody Book updatedBook
+            @PathVariable  @Min(value = 1) long id,
+            @Valid @RequestBody RequestBook requestBook
     ){
 
        for (int i=0 ; i< books.size() ; i++){
            if (books.get(i).getId() == id){
+               Book updatedBook = convertRequestToBook(id,requestBook);
                books.set(i,updatedBook);
                return;
            }
@@ -103,7 +86,7 @@ public class BookController {
     }
 
     @DeleteMapping("/api/books/{id}")
-    public void deleteBook(@PathVariable long id){
+    public void deleteBook(@PathVariable  @Min(value = 1) long id){
         books.removeIf(book -> book.getId() == id);
     }
 
