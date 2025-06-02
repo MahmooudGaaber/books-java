@@ -2,14 +2,12 @@ package com.luv2code.books.controller;
 
 import com.luv2code.books.entity.Book;
 import com.luv2code.books.entity.RequestBook;
-import com.luv2code.books.exception.BookErrorResponse;
 import com.luv2code.books.exception.BookNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -109,26 +107,6 @@ public class BookController {
 
     public Book convertRequestToBook(long id , RequestBook book){
         return  new Book(id,book.getRating(), book.getCategory(), book.getAuthor(), book.getTitle());
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<BookErrorResponse> handleException(BookNotFoundException exc){
-        BookErrorResponse bookErrorResponse = new BookErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                System.currentTimeMillis(),
-                exc.getMessage()
-        );
-        return new ResponseEntity<>(bookErrorResponse,HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<BookErrorResponse> handleException(Exception exc){
-        BookErrorResponse bookErrorResponse = new BookErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                System.currentTimeMillis(),
-                exc.getMessage()
-        );
-        return new ResponseEntity<>(bookErrorResponse,HttpStatus.BAD_REQUEST);
     }
 
 }
