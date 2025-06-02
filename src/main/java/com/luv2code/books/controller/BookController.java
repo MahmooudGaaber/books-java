@@ -2,11 +2,14 @@ package com.luv2code.books.controller;
 
 import com.luv2code.books.entity.Book;
 import com.luv2code.books.entity.RequestBook;
+import com.luv2code.books.exception.BookErrorResponse;
+import com.luv2code.books.exception.BookNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -48,23 +51,18 @@ public class BookController {
     @Operation(summary = "Get Books By Id")
     @GetMapping("books/{id}")
     public Book getBookById(@PathVariable @Min(value = 1) long   id ){
+
         return books.stream()
                 .filter(book -> book.getId()== id)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(
+                        ()-> new BookNotFoundException("Book Not Found -"+ id )
+                );
+
     }
 
 
 
-//    @GetMapping("books/withQueryParameter")
-//    public List<Book> getBookByCategoryWithQueryParameter(@RequestParam(required = false) String category ){
-//        if (category == null ){
-//            return  books;
-//        }
-//        return books.stream()
-//                .filter(book -> book.getCategory().equalsIgnoreCase(category))
-//                .toList();
-//    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create New Book")
@@ -74,14 +72,11 @@ public class BookController {
         books.add(convertRequestToBook(id,requestBook));
     }
 
-    public Book convertRequestToBook(long id , RequestBook book){
-        return  new Book(id,book.getRating(), book.getCategory(), book.getAuthor(), book.getTitle());
-    }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Update Book")
     @PutMapping("books/{id}")
-    public void updateBook(
+    public Book updateBook(
             @PathVariable  @Min(value = 1) long id,
             @Valid @RequestBody RequestBook requestBook
     ){
@@ -90,9 +85,11 @@ public class BookController {
            if (books.get(i).getId() == id){
                Book updatedBook = convertRequestToBook(id,requestBook);
                books.set(i,updatedBook);
-               return;
+               return updatedBook;
            }
        }
+
+      throw new BookNotFoundException("Book Not Found - "+ id );
 
     }
 
@@ -100,8 +97,38 @@ public class BookController {
     @Operation(summary = "Update Book By Id")
     @DeleteMapping("/api/books/{id}")
     public void deleteBook(@PathVariable  @Min(value = 1) long id){
+        books.stream()
+                .filter(book -> book.getId()== id)
+                .findFirst()
+                .orElseThrow(
+                        ()-> new BookNotFoundException("Book Not Found -"+ id )
+                );
         books.removeIf(book -> book.getId() == id);
     }
 
+
+    public Book convertRequestToBook(long id , RequestBook book){
+        return  new Book(id,book.getRating(), book.getCategory(), book.getAuthor(), book.getTitle());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<BookErrorResponse> handleException(BookNotFoundException exc){
+        BookErrorResponse bookErrorResponse = new BookErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                System.currentTimeMillis(),
+                exc.getMessage()
+        );
+        return new ResponseEntity<>(bookErrorResponse,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<BookErrorResponse> handleException(Exception exc){
+        BookErrorResponse bookErrorResponse = new BookErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                System.currentTimeMillis(),
+                exc.getMessage()
+        );
+        return new ResponseEntity<>(bookErrorResponse,HttpStatus.BAD_REQUEST);
+    }
 
 }
